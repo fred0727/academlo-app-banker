@@ -3,14 +3,18 @@ const User = require('../models/user.model');
 const randomAccountNumber = require('../utils/accountNumber');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const bcrypt = require('bcryptjs');
 
 exports.signUp = catchAsync(async (req, res) => {
   const { name, password } = req.body;
   const accountNumber = randomAccountNumber();
+  const salt = await bcrypt.genSalt(12);
+  const encryptedPassword = await bcrypt.hash(password, salt);
+
   const user = await User.create({
     name: name.toLowerCase().trim(),
     accountNumber,
-    password,
+    password: encryptedPassword,
   });
   return res.status(201).json({
     status: 'success',
@@ -30,9 +34,12 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({
     where: {
       accountNumber,
-      password,
     },
   });
+
+  if (!(await bcrypt.compare(password, user.password))) {
+    return next(new AppError(`Incorret account number or password`, 401));
+  }
 
   if (user) {
     return res.status(200).json({

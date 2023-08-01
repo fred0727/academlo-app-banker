@@ -15,6 +15,7 @@ const User = db.define('users', {
   accountNumber: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    unique: true,
   },
   password: {
     type: DataTypes.STRING,

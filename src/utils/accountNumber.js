@@ -19,7 +19,7 @@ const randomAccountNumber = () => {
 
   while (number == 0) {
     var min = 10000000;
-    var max = 1000000000;
+    var max = 10000000000;
 
     var randomNumber = Math.floor(Math.random() * (max - min) + min);
     let validate = validateAccountNumber(randomNumber);
